@@ -1,0 +1,6 @@
+dependencies:
+- name: llm-d
+  repository: https://llm-d.ai/llm-d-deployer
+  version: 1.0.17
+digest: sha256:7d1de6c9c4aa19bed2a9ada7870d387a9fdf6ef9bf4925b96608afddb6ac247a
+generated: "2025-05-30T13:22:24.340019-07:00"

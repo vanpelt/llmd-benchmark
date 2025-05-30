@@ -1,0 +1,7 @@
+apiVersion: v2
+name: llm-d-benchmark
+version: 0.1.0
+dependencies:
+  - name: llm-d
+    version: 1.0.17
+    repository: "https://llm-d.ai/llm-d-deployer"

@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Raw datasets / generated results
+ShareGPT_V3_unfiltered_cleaned_split.json
+results.json
+
+# Helm
+helm/charts/

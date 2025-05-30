@@ -6,4 +6,19 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "openai>=1.82.0",
+    "torch>=2.7.0",
+    "vllm",
+    "weave>=0.51.48",
 ]
+
+# Always use cpu torch because we're always benchmarking a server
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cpu" },
+]
+vllm = { git = "https://github.com/vllm-project/vllm", branch = "main" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true

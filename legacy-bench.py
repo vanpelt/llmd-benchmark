@@ -6,6 +6,10 @@ import json
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import string
 
+# This is a custom benchmark script for testing cacheability
+# It implements a custom approach to benchmark how caching affects performance
+# For standard benchmarking, see the vllm/benchmarks directory
+
 # Dummy tool implementations
 def dummy_tool_1(input_text):
     # Simulate processing
@@ -83,8 +87,8 @@ def make_request(client, payload, n_requests, mutate_prob=0.5):
             response = client.chat.completions.create(
                 model="meta-llama/Llama-3.2-3B-Instruct",
                 messages=messages,
-                functions=FUNCTIONS,
-                function_call="auto"
+                #functions=FUNCTIONS,
+                #function_call="auto"
             )
             msg = response.choices[0].message
             if msg.function_call:
