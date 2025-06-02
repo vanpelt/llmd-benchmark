@@ -1,6 +1,6 @@
 # Justfile for running vllm benchmarks
 # "meta-llama/Llama-3.2-3B-Instruct")
-export MODEL := env("MODEL", "RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8")
+export MODEL := env("MODEL", "Qwen/Qwen3-235B-A22B")
 export BASE_URL := env("BASE_URL", "http://llm-d.cw4637-llm-d.coreweave.app/pd")
 export RR := env("RR", "10")
 export MC := env("MC", "50")

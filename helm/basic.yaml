@@ -1,0 +1,60 @@
+llm-d:
+  sampleApplication:
+    baseConfigMapRefName: basic-gpu-preset
+    enabled: true
+    model:
+      modelArtifactURI: hf://Qwen/Qwen3-235B-A22B
+      modelName: "Qwen/Qwen3-235B-A22B"
+      auth:
+        hfToken:
+          name: llm-d-hf-token
+          key: HF_TOKEN
+
+    prefill:
+      replicas: 0
+
+    decode:
+      replicas: 2
+      extraArgs:
+        - --tensor-parallel-size
+        - "1"
+        - --enable-expert-parallel
+        - --data-parallel-size
+        - "2"
+        - --pipeline-parallel-size
+        - "2"
+
+    resources:
+      limits:
+        nvidia.com/gpu: 4
+        rdma/ib: 1
+      requests:
+        cpu: "8"
+        memory: 64Gi
+        nvidia.com/gpu: 4
+        rdma/ib: 1
+  redis:
+    enabled: false
+  modelservice:
+    epp:
+      defaultEnvVarsOverride:
+        - name: ENABLE_KVCACHE_AWARE_SCORER
+          value: "false"
+        - name: ENABLE_PREFIX_AWARE_SCORER
+          value: "false"
+        - name: ENABLE_LOAD_AWARE_SCORER
+          value: "false"
+        - name: ENABLE_SESSION_AWARE_SCORER
+          value: "false"
+        - name: PD_ENABLED
+          value: "false"
+        - name: PD_PROMPT_LEN_THRESHOLD
+          value: "10"
+        - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_LOAD_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_SESSION_AWARE_SCORER
+          value: "false"

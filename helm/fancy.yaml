@@ -1,268 +1,73 @@
 llm-d:
-  clusterDomain: cluster.local
-  common: {}
-  commonAnnotations: {}
-  commonLabels: {}
-  extraDeploy: []
-  fullnameOverride: ""
-  gateway:
-    annotations: {}
-    enabled: true
-    fullnameOverride: ""
-    gatewayClassName: kgateway
-    kGatewayParameters:
-      proxyUID: false
-    listeners:
-    - name: default
-      path: /
-      port: 80
-      protocol: HTTP
-    nameOverride: ""
-    serviceType: NodePort
-  global:
-    imagePullSecrets: []
-    imageRegistry: ""
-    security:
-      allowInsecureImages: true
-  ingress:
-    annotations: {}
-    clusterRouterBase: ""
-    enabled: true
-    extraHosts: []
-    extraTls: []
-    host: ""
-    ingressClassName: ""
-    path: /
-    tls:
-      enabled: false
-      secretName: ""
-  kubeVersion: ""
   modelservice:
-    annotations: {}
-    decode:
-      tolerations:
-      - effect: NoSchedule
-        key: nvidia.com/gpu
-        operator: Exists
-    enabled: true
     nodeSelector:
       compute.coreweave.com/node-pool: h100
+
     epp:
-      defaultEnvVars:
-      - name: ENABLE_KVCACHE_AWARE_SCORER
-        value: "true"
-      - name: KVCACHE_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: KVCACHE_INDEXER_REDIS_ADDR
-        value: '{{ if .Values.redis.enabled }}{{ include "redis.master.service.fullurl"
-          . }}{{ end }}'
-      - name: ENABLE_PREFIX_AWARE_SCORER
-        value: "true"
-      - name: PREFIX_AWARE_SCORER_WEIGHT
-        value: "2"
-      - name: ENABLE_LOAD_AWARE_SCORER
-        value: "true"
-      - name: LOAD_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: ENABLE_SESSION_AWARE_SCORER
-        value: "false"
-      - name: SESSION_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: PD_ENABLED
-        value: "true"
-      - name: PD_PROMPT_LEN_THRESHOLD
-        value: "512"
-      - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
-        value: "true"
-      - name: PREFILL_KVCACHE_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: PREFILL_ENABLE_LOAD_AWARE_SCORER
-        value: "true"
-      - name: PREFILL_LOAD_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
-        value: "true"
-      - name: PREFILL_PREFIX_AWARE_SCORER_WEIGHT
-        value: "2"
-      - name: PREFILL_ENABLE_SESSION_AWARE_SCORER
-        value: "false"
-      - name: PREFILL_SESSION_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: DECODE_ENABLE_KVCACHE_AWARE_SCORER
-        value: "false"
-      - name: DECODE_KVCACHE_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: DECODE_ENABLE_LOAD_AWARE_SCORER
-        value: "true"
-      - name: DECODE_LOAD_AWARE_SCORER_WEIGHT
-        value: "1"
-      - name: DECODE_ENABLE_PREFIX_AWARE_SCORER
-        value: "true"
-      - name: DECODE_PREFIX_AWARE_SCORER_WEIGHT
-        value: "2"
-      - name: DECODE_ENABLE_SESSION_AWARE_SCORER
-        value: "false"
-      - name: DECODE_SESSION_AWARE_SCORER_WEIGHT
-        value: "1"
-      defaultEnvVarsOverride: []
+      defaultEnvVarsOverride:
+        - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
+          value: "true"
+        - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
+          value: "true"
+        - name: DECODE_ENABLE_KVCACHE_AWARE_SCORER
+          value: "true"
+        - name: DECODE_ENABLE_PREFIX_AWARE_SCORER
+          value: "true"
+        - name: ENABLE_KVCACHE_AWARE_SCORER
+          value: "true"
+        - name: ENABLE_PREFIX_AWARE_SCORER
+          value: "true"
+        - name: PD_ENABLED
+          value: "true"
+        - name: PD_PROMPT_LEN_THRESHOLD
+          value: "512"
       image:
-        imagePullPolicy: Always
-        pullSecrets: []
-        registry: ghcr.io
-        repository: llm-d/llm-d-inference-scheduler
         tag: v0.1.0
       metrics:
-        enabled: true
         serviceMonitor:
-          annotations: {}
           interval: 10s
-          labels: {}
-          namespaceSelector:
-            any: false
-            matchNames: []
-          path: /metrics
-          port: metrics
-          selector:
-            matchLabels: {}
-    fullnameOverride: ""
-    image:
-      imagePullPolicy: Always
-      pullSecrets: []
-      registry: ghcr.io
-      repository: llm-d/llm-d-model-service
-      tag: 0.0.10
+
     inferenceSimulator:
       image:
-        imagePullPolicy: IfNotPresent
-        pullSecrets: []
-        registry: ghcr.io
-        repository: llm-d/llm-d-inference-sim
         tag: v0.1.0
-    metrics:
-      enabled: true
-      serviceMonitor:
-        annotations: {}
-        interval: 15s
-        labels: {}
-        namespaceSelector:
-          any: false
-          matchNames: []
-        path: /metrics
-        port: vllm
-        selector:
-          matchLabels: {}
-    nameOverride: ""
-    podAnnotations: {}
-    podLabels: {}
-    prefill:
-      tolerations:
-      - effect: NoSchedule
-        key: nvidia.com/gpu
-        operator: Exists
-    rbac:
-      create: true
-    replicas: 1
+
     routingProxy:
       image:
-        imagePullPolicy: IfNotPresent
-        pullSecrets: []
-        registry: ghcr.io
-        repository: llm-d/llm-d-routing-sidecar
-        tag: 0.0.7
-    service:
-      enabled: true
-      port: 8443
-      type: ClusterIP
-    serviceAccount:
-      annotations: {}
-      create: true
-      fullnameOverride: ""
-      labels: {}
-      nameOverride: ""
-    vllm:
-      image:
-        imagePullPolicy: IfNotPresent
-        pullSecrets: []
-        registry: ghcr.io
-        repository: llm-d/llm-d
-        tag: 0.0.8
-      metrics:
-        enabled: true
-  nameOverride: ""
-  redis:
-    architecture: standalone
-    auth:
-      enabled: false
-      existingSecret: ""
-      existingSecretPasswordKey: ""
-    enabled: false
-    image:
-      registry: quay.io
-      repository: sclorg/redis-7-c9s
-      tag: c9s
-    master:
-      kind: Deployment
-      pdb:
-        create: false
-      persistence:
-        enabled: true
-        size: 5Gi
-      resources:
-        limits:
-          cpu: 250m
-          memory: 256Mi
-        requests:
-          cpu: 100m
-          memory: 128Mi
-      service:
-        ports:
-          redis: 8100
-    networkPolicy:
-      enabled: false
+        tag: "0.0.7"
+
   sampleApplication:
     baseConfigMapRefName: basic-gpu-with-nixl-preset
-    decode:
-      extraArgs:
-      - --data-parallel-size
-      - "1"
-      - --tensor-parallel-size
-      - "4"
-      - --disable-log-requests
-      - --max-model-len
-      - "250000"
-      - --distributed-executor-backend
-      - mp
-      - --block-size
-      - "128"
-      - --enable-expert-parallel
-      replicas: 2
-    enabled: true
-    inferencePoolPort: 8000
+
     model:
+      modelArtifactURI: hf://Qwen/Qwen3-235B-A22B
+      modelName: Qwen/Qwen3-235B-A22B
       auth:
         hfToken:
-          key: HF_TOKEN
           name: llm-d-hf-token
-      modelArtifactURI: hf://RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
-      modelName: RedHatAI/Llama-4-Maverick-17B-128E-Instruct-FP8
-      servedModelNames: []
+          key: HF_TOKEN
+
     prefill:
-      extraArgs:
-      - --data-parallel-size
-      - "1"
-      - --tensor-parallel-size
-      - "4"
-      - --disable-log-requests
-      - --max-model-len
-      - "250000"
-      - --distributed-executor-backend
-      - mp
-      - --block-size
-      - "128"
-      - --max-num-batched-tokens
-      - "32768"
-      - --enable-expert-parallel
       replicas: 3
+      extraArgs:
+        - --tensor-parallel-size
+        - "1"
+        - --enable-expert-parallel
+        - --data-parallel-size
+        - "2"
+        - --pipeline-parallel-size
+        - "2"
+
+    decode:
+      replicas: 2
+      extraArgs:
+        - --tensor-parallel-size
+        - "1"
+        - --enable-expert-parallel
+        - --data-parallel-size
+        - "2"
+        - --pipeline-parallel-size
+        - "2"
+
     resources:
       limits:
         nvidia.com/gpu: 4
@@ -272,11 +77,10 @@ llm-d:
         memory: 64Gi
         nvidia.com/gpu: 4
         rdma/ib: 1
-  test:
+
+  redis:
     enabled: false
-    image:
-      imagePullPolicy: Always
-      pullSecrets: []
-      registry: quay.io
-      repository: curl/curl
-      tag: latest
+    master:
+      persistence:
+        enabled: true
+        size: 5Gi
