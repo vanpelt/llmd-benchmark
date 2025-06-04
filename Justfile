@@ -1,11 +1,12 @@
 # Justfile for running vllm benchmarks
 # "meta-llama/Llama-3.2-3B-Instruct")
-export MODEL := env("MODEL", "Qwen/Qwen3-235B-A22B")
+export MODEL := env("MODEL", "meta-llama/Llama-3.3-70B-Instruct")
+export SERVED_MODEL_NAME := env("SERVED_MODEL_NAME", MODEL)
 export BASE_URL := env("BASE_URL", "http://llm-d.cw4637-llm-d.coreweave.app/pd")
 export RR := env("RR", "10")
 export MC := env("MC", "50")
 export NUM_REQUESTS := env("NUM_REQUESTS", "300")
-export DATASET_PATH := env("DATASET_PATH", "vllm_sharegpt_300.json")
+export DATASET_PATH := env("DATASET_PATH", "vllm_openui_300.json")
 export INPUT_LEN := env("INPUT_LEN", "1000")
 export OUTPUT_LEN := env("OUTPUT_LEN", "250")
 
@@ -34,6 +35,7 @@ benchmark:
     python benchmark.py \
         --base-url {{BASE_URL}} \
         --model {{MODEL}} \
+        --served-model-name {{SERVED_MODEL_NAME}} \
         --endpoint-type openai \
         --endpoint /v1/completions \
         --dataset-name random \
@@ -50,6 +52,7 @@ benchmark-sharegpt:
     python benchmark.py \
         --base-url {{BASE_URL}} \
         --model {{MODEL}} \
+        --served-model-name {{SERVED_MODEL_NAME}} \
         --request-rate {{RR}} \
         --max-concurrency {{MC}} \
         --seed $(date +%M%H%M%S) \
@@ -61,11 +64,11 @@ benchmark-sharegpt:
 
 # Run benchmark with basic server
 benchmark-basic:
-    BASE_URL="http://llm-d.cw4637-llm-d.coreweave.app/basic" just benchmark
+    BASE_URL="http://llm-d.cw4637-llm-d.coreweave.app/basic" SERVED_MODEL_NAME="{{MODEL}}-basic" just benchmark
 
 # Run ShareGPT benchmark with basic server
 benchmark-basic-sharegpt:
-    BASE_URL="http://llm-d.cw4637-llm-d.coreweave.app/basic" just benchmark-sharegpt
+    BASE_URL="http://llm-d.cw4637-llm-d.coreweave.app/basic" SERVED_MODEL_NAME="{{MODEL}}-basic" just benchmark-sharegpt
 
 # Run a comparison benchmark between both servers (just run both back to back)
 benchmark-compare: benchmark-basic benchmark
@@ -84,3 +87,9 @@ helm-upgrade-fancy *extra_args:
 
 helm-diff-fancy:
     helm diff upgrade test ./helm -f helm/fancy.yaml
+
+helm-upgrade-basic *extra_args:
+    HELM_NAMESPACE=test-inference-basic helm upgrade --install -f helm/basic.yaml basic ./helm {{extra_args}}
+
+helm-diff-basic:
+    HELM_NAMESPACE=test-inference-basic helm diff upgrade basic ./helm -f helm/basic.yaml --allow-unreleased

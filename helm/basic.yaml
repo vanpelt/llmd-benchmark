@@ -3,8 +3,8 @@ llm-d:
     baseConfigMapRefName: basic-gpu-preset
     enabled: true
     model:
-      modelArtifactURI: hf://Qwen/Qwen3-235B-A22B
-      modelName: "Qwen/Qwen3-235B-A22B"
+      modelArtifactURI: hf://meta-llama/Llama-3.3-70B-Instruct
+      modelName: "meta-llama/Llama-3.3-70B-Instruct-basic"
       auth:
         hfToken:
           name: llm-d-hf-token
@@ -14,15 +14,17 @@ llm-d:
       replicas: 0
 
     decode:
-      replicas: 2
+      replicas: 3
       extraArgs:
-        - --tensor-parallel-size
-        - "1"
-        - --enable-expert-parallel
-        - --data-parallel-size
-        - "2"
-        - --pipeline-parallel-size
-        - "2"
+        - "--tensor-parallel-size"
+        - "4"
+        - "--disable-log-requests"
+        - "--max-model-len"
+        - "4096"
+        - "--distributed-executor-backend"
+        - "mp"
+        - "--block-size"
+        - "128"
 
     resources:
       limits:
@@ -36,6 +38,10 @@ llm-d:
   redis:
     enabled: false
   modelservice:
+    rbac:
+      create: false
+    nodeSelector:
+      compute.coreweave.com/node-pool: h100
     epp:
       defaultEnvVarsOverride:
         - name: ENABLE_KVCACHE_AWARE_SCORER

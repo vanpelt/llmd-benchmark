@@ -108,6 +108,7 @@ def main():
     if os.path.exists(output_path):
         os.remove(output_path)
 
+    print(f"Benchmarking {args.served_model_name}")
     # Run the benchmark and capture summary metrics
     bench_serve.main(args)
 
