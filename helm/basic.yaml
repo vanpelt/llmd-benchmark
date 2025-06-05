@@ -3,8 +3,8 @@ llm-d:
     baseConfigMapRefName: basic-gpu-preset
     enabled: true
     model:
-      modelArtifactURI: hf://meta-llama/Llama-3.3-70B-Instruct
-      modelName: "meta-llama/Llama-3.3-70B-Instruct-basic"
+      modelArtifactURI: hf://RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      modelName: RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8-basic
       auth:
         hfToken:
           name: llm-d-hf-token
@@ -17,29 +17,22 @@ llm-d:
       replicas: 3
       extraArgs:
         - "--tensor-parallel-size"
-        - "4"
-        - "--disable-log-requests"
+        - "2"
         - "--max-model-len"
         - "4096"
-        - "--distributed-executor-backend"
-        - "mp"
-        - "--block-size"
-        - "128"
 
     resources:
       limits:
-        nvidia.com/gpu: 4
+        nvidia.com/gpu: 2
         rdma/ib: 1
       requests:
         cpu: "8"
         memory: 64Gi
-        nvidia.com/gpu: 4
+        nvidia.com/gpu: 2
         rdma/ib: 1
   redis:
     enabled: false
   modelservice:
-    rbac:
-      create: false
     nodeSelector:
       compute.coreweave.com/node-pool: h100
     epp:
