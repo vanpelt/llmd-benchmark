@@ -46,6 +46,8 @@ async def instrumented_request_func(request_func_input, pbar=None):
     prompt_len: int = 0
     error: str = ""
     """
+    if output.error != "":
+        print(f"!!! Error: {output.error}")
     try:
         # Log success flag
         pred_logger.log_score(scorer="success", score=bool(output.success))

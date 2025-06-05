@@ -1,26 +1,33 @@
 llm-d:
   modelservice:
+    vllm:
+      logLevel: DEBUG
+
     nodeSelector:
       compute.coreweave.com/node-pool: h100
 
     epp:
       defaultEnvVarsOverride:
-        - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
-          value: "true"
-        - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
-          value: "true"
-        - name: DECODE_ENABLE_KVCACHE_AWARE_SCORER
-          value: "true"
-        - name: DECODE_ENABLE_PREFIX_AWARE_SCORER
-          value: "true"
         - name: ENABLE_KVCACHE_AWARE_SCORER
-          value: "true"
+          value: "false"
         - name: ENABLE_PREFIX_AWARE_SCORER
           value: "true"
+        - name: ENABLE_LOAD_AWARE_SCORER
+          value: "true"
+        - name: ENABLE_SESSION_AWARE_SCORER
+          value: "false"
         - name: PD_ENABLED
           value: "false"
         - name: PD_PROMPT_LEN_THRESHOLD
-          value: "512"
+          value: "10"
+        - name: PREFILL_ENABLE_KVCACHE_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_LOAD_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_PREFIX_AWARE_SCORER
+          value: "false"
+        - name: PREFILL_ENABLE_SESSION_AWARE_SCORER
+          value: "false"
       image:
         tag: v0.1.0
       metrics:
@@ -36,11 +43,11 @@ llm-d:
         tag: "0.0.7"
 
   sampleApplication:
-    baseConfigMapRefName: basic-gpu-with-nixl-preset
+    baseConfigMapRefName: basic-gpu-preset
 
     model:
-      modelArtifactURI: hf://meta-llama/Llama-3.3-70B-Instruct
-      modelName: meta-llama/Llama-3.3-70B-Instruct
+      modelArtifactURI: hf://RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
+      modelName: RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8
       auth:
         hfToken:
           name: llm-d-hf-token
@@ -50,36 +57,26 @@ llm-d:
       replicas: 0
       extraArgs:
         - "--tensor-parallel-size"
-        - "4"
-        - "--disable-log-requests"
+        - "2"
         - "--max-model-len"
-        - "12288"
-        - "--distributed-executor-backend"
-        - "mp"
-        - "--block-size"
-        - "128"
+        - "4096"
 
     decode:
       replicas: 3
       extraArgs:
         - "--tensor-parallel-size"
-        - "4"
-        - "--disable-log-requests"
+        - "2"
         - "--max-model-len"
-        - "12288"
-        - "--distributed-executor-backend"
-        - "mp"
-        - "--block-size"
-        - "128"
+        - "4096"
 
     resources:
       limits:
-        nvidia.com/gpu: 4
+        nvidia.com/gpu: 2
         rdma/ib: 1
       requests:
         cpu: "8"
         memory: 64Gi
-        nvidia.com/gpu: 4
+        nvidia.com/gpu: 2
         rdma/ib: 1
 
   redis:

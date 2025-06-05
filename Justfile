@@ -1,6 +1,6 @@
 # Justfile for running vllm benchmarks
 # "meta-llama/Llama-3.2-3B-Instruct")
-export MODEL := env("MODEL", "meta-llama/Llama-3.3-70B-Instruct")
+export MODEL := env("MODEL", "RedHatAI/Llama-3.3-70B-Instruct-quantized.w8a8")
 export SERVED_MODEL_NAME := env("SERVED_MODEL_NAME", MODEL)
 export BASE_URL := env("BASE_URL", "http://llm-d.cw4637-llm-d.coreweave.app/pd")
 export RR := env("RR", "10")
